@@ -1,70 +1,39 @@
 package com.example.whiteboard.services;
 
 import com.example.whiteboard.models.Widget;
+import com.example.whiteboard.repositories.WidgetRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
+// port 3306
+
+@Service
 public class WidgetService {
-    List<Widget> widgets = new ArrayList<Widget>();
+    @Autowired
+    WidgetRepository repository;
 
-    public Widget createWidget(String tid, Widget widget) {
-        Random rand = new Random();
-        String newId = Integer.toHexString(rand.nextInt());
-        widget.setId(newId);
-        widget.setTopicId(tid);
-        int i = 0;
-        for (Widget w : widgets) {
-            if (widget.getTopicId().equals(tid)) {
-                i++;
-            }
-        }
-        widget.setWidgetOrder(i);
-        widgets.add(widget);
-        return widget;
+    public Widget createWidget(Widget widget) {
+        return repository.save(widget);
     }
 
     public List<Widget> findWidgetsForTopic(String tid) {
-        List<Widget> widgetsForTopic = new ArrayList<Widget>();
-        for(Widget w: widgets) {
-            if(w.getTopicId().equals(tid)) {
-                widgetsForTopic.add(w);
-            }
-        }
-        return widgetsForTopic;
+        return repository.findWidgetsByTopicId(tid);
     }
 
-    public Integer updateWidget(String widgetId, Widget newWidget) {
-        for (int i = 0; i < widgets.size(); i++) {
-            if (widgets.get(i).getId().equals(widgetId)) {
-                widgets.set(i, newWidget);
-                return 1;
-            }
-        }
-        return 0;
+    public Widget updateWidget(int widgetId, Widget newWidget) {
+        return repository.save(newWidget);
     }
 
-    public Integer deleteWidget(String widgetId) {
-        for (int i = 0; i < widgets.size(); i++) {
-            if (widgets.get(i).getId().equals(widgetId)) {
-                widgets.remove(i);
-                return 1;
-            }
-        }
-        return 0;
+    public void deleteWidget(int widgetId) {
+        repository.deleteById(widgetId);
     }
 
-    public Integer reorderWidget(String tid, Integer order, Widget newWidget) {
-        for (int i = 0; i < widgets.size(); i++) {
-            Widget w = widgets.get(i);
-            if (w.getTopicId().equals(tid) && w.getWidgetOrder().equals(newWidget.getWidgetOrder())) {
-                w.setWidgetOrder(order);
-            }
-            if (w.getId().equals(newWidget.getId())) {
-                widgets.set(i, newWidget);
-            }
-        }
-        return 1;
+    public Widget reorderWidget(String tid, Integer order, Widget newWidget) {
+        Widget oldSpot = repository.findWidgetsByTopicIdAndOrder(tid, newWidget.getWidgetOrder());
+        oldSpot.setWidgetOrder(order);
+        repository.save(newWidget);
+        return repository.save(oldSpot);
     }
 }

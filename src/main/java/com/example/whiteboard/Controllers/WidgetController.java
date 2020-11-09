@@ -2,6 +2,7 @@ package com.example.whiteboard.Controllers;
 
 import com.example.whiteboard.models.Widget;
 import com.example.whiteboard.services.WidgetService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -9,13 +10,13 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "*")
 public class WidgetController {
-    WidgetService service = new WidgetService();
+    @Autowired
+    WidgetService service;
 
-    @PostMapping("/api/topics/{tid}/widgets")
+    @PostMapping("/api/widgets")
     public Widget createWidget(
-            @PathVariable String tid,
             @RequestBody Widget widget) {
-        return service.createWidget(tid, widget);
+        return service.createWidget(widget);
     }
 
     @GetMapping("/api/topics/{tid}/widgets")
@@ -25,21 +26,21 @@ public class WidgetController {
     }
 
     @PutMapping("/api/widgets/{wid}")
-    public Integer updateWidget(
-            @PathVariable String wid,
+    public Widget updateWidget(
+            @PathVariable int wid,
             @RequestBody Widget newWidget) {
         System.out.println("here");
         return service.updateWidget(wid, newWidget);
     }
 
     @DeleteMapping("/api/widgets/{wid}")
-    public Integer deleteWidget(
-            @PathVariable String wid) {
-        return service.deleteWidget(wid);
+    public void deleteWidget(
+            @PathVariable int wid) {
+        service.deleteWidget(wid);
     }
 
     @PutMapping("/api/topics/{tid}/{order}")
-    public Integer reorderWidget(
+    public Widget reorderWidget(
             @PathVariable String tid,
             @PathVariable String order,
             @RequestBody Widget newWidget) {

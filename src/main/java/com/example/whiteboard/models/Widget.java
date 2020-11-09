@@ -1,8 +1,14 @@
 package com.example.whiteboard.models;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "widgets")
 public class Widget {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     private String name;
-    private String id;
     private String type;
     private Integer widgetOrder;
     private String text;
@@ -15,14 +21,14 @@ public class Widget {
     private String value;
     private String topicId;
 
-    public Widget(String id, String type, String name, String topicId) {
+    public Widget(int id, String type, String name, String topicId) {
         this.id = id;
         this.type = type;
         this.name = name;
         this.topicId = topicId;
     }
 
-    public Widget(String id, String type, String name) {
+    public Widget(int id, String type, String name) {
         this.id = id;
         this.type = type;
         this.name = name;
@@ -39,11 +45,11 @@ public class Widget {
         this.name = name;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
